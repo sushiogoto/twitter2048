@@ -1,0 +1,25 @@
+body {
+}
+
+.board {
+  background: #bbada0;
+}
+
+.cell {
+  background: white;
+  text-align: center;
+  width: 23%;
+  float: left;
+  height: 100%;
+  padding: 20px;
+  margin: 5px;
+  border-radius: 3px;
+  font-size: 3em;
+}
+
+
+
+
+/*.cell .r0 {
+  display: inline;
+}*/
