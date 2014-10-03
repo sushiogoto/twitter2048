@@ -25,6 +25,15 @@ body {
   width: 472px;
 }
 
+#clickme {
+  border-radius: 2px;
+  border: none;
+  background: #abcdef;
+  font-size: 1.5em;
+  margin: 10px;
+  outline: 0;
+}
+
 .cell {
   /*background: rgba(238, 238, 218, 0.3);*/
   background: #f0f0f0;

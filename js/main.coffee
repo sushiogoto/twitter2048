@@ -43,9 +43,9 @@ generateTile = (board) ->
 
 move = (board, direction) ->
   newBoard = buildBoard()
-
+  validDirection = ['right', 'left', 'up', 'down']
   for i in [0..3]
-    if direction is 'right' or direction is 'left'
+    if direction in validDirection
       row = getRow(i, board)
       row = mergeCells(row, direction)
       row = collapseCells(row, direction)
@@ -57,6 +57,9 @@ move = (board, direction) ->
 
 getRow = (r, board) ->
   [board[r][0], board[r][1], board[r][2], board[r][3]]
+
+getCol = (c, board) ->
+  [board[0][c], board[1][c], board[2][c], board[3][c]]
 
 setRow = (row, index, board) ->
   board[index] = row
@@ -92,15 +95,14 @@ mergeCells = (row, direction) ->
 
 collapseCells = (row, direction) ->
   row = row.filter (x) -> x isnt 0
-  if direction is 'right'
-    while row.length < 4
-      row.unshift 0
+  while row.length < 4
+      if direction is 'right'
+        row.unshift 0
+      else if direction == 'left'
+        row.push 0
   # if direction is 'left'
   #   while row.length < 4
   #     row.push 0
-  else if direction == 'left'
-    while row.length < 4
-      row.push 0
   row
 
 moveIsValid = (originalBoard, newBoard) ->
@@ -134,7 +136,10 @@ isGameOver = (board) ->
 showBoard = (board) ->
   for row in [0..3]
     for col in [0..3]
-      $(".r#{row}.c#{col} > div").html(board[row][col])
+      if board[row][col] == 0
+        $(".r#{row}.c#{col} > div").html(" ")
+      else
+        $(".r#{row}.c#{col} > div").html(board[row][col])
 
 printArray = (array) ->
   console.log "-- Start --"
@@ -148,12 +153,13 @@ $ ->
   generateTile(@board)
   showBoard(@board)
   # $('.board').scale(2);
-
-  $( ".board" ).click =>
+  $( "#clickme" ).click =>
     $( ".board" ).animate(
-      opacity: 0.25,
+      opacity: "toggle",
       left: "+=50",
-      height: "toggle",5000)
+      height: "toggle",
+      # 'zoom': 0,
+      5000)
 
   $('body').keydown (event) =>
 
@@ -177,11 +183,11 @@ $ ->
       #check move is valid
       if moveIsValid(@board, newBoard)
         console.log "valid"
+        generateTile(newBoard)
         @board = newBoard
         #generate tile
         showBoard(@board)
         #show board
-        generateTile(@board)
         #check game lost
         if isGameOver(@board)
           console.log "YOU LOSE!"
