@@ -43,13 +43,18 @@ generateTile = (board) ->
 
 move = (board, direction) ->
   newBoard = buildBoard()
-  validDirection = ['right', 'left', 'up', 'down']
+  # validDirection = ['right', 'left', 'up', 'down']
   for i in [0..3]
-    if direction in validDirection
+    if direction is 'right' or direction is 'left'
       row = getRow(i, board)
       row = mergeCells(row, direction)
       row = collapseCells(row, direction)
       setRow(row, i, newBoard)
+    else if direction is 'up' or direction is 'down'
+      column = getCol(i, board)
+      column = mergeCells(column, direction)
+      column = collapseCells(column, direction)
+      setCol(column, i, newBoard)
 
   newBoard
   # board = newBoard
@@ -64,20 +69,23 @@ getCol = (c, board) ->
 setRow = (row, index, board) ->
   board[index] = row
 
+setCol = (col, index, board) ->
+  for row in [0..3]
+    board[row][index] = col[row]
+
 # getCol = (c, board) ->
 #   [board[0][c], board[1][c], board[2][c], board[3][c]]
 
-mergeCells = (row, direction) ->
-
-  merge = (row) ->
+mergeCells = (cells, direction) ->
+  merge = (cells) ->
     for a in [3..1]
       for b in [a-1..0]
-        if row[a] is 0 then break
-        else if row[a] == row[b]
-          row[a] *= 2
-          row[b] = 0
-        else if row[b] isnt 0 then break
-    row
+        if cells[a] is 0 then break
+        else if cells[a] == cells[b]
+          cells[a] *= 2
+          cells[b] = 0
+        else if cells[b] isnt 0 then break
+    cells
   # else if direction == "left"
   #   for a in [1..3]
   #     for b in [0..a-1]
@@ -87,23 +95,23 @@ mergeCells = (row, direction) ->
   #         row[a] = 0
   #       else if row[b] isnt a-1 then break
   switch direction
-    when "right"
-      row = merge row
-    when "left"
-      row = merge(row.reverse()).reverse()
-  row
+    when "right", "down"
+      cells = merge cells
+    when "left", "up"
+      cells = merge(cells.reverse()).reverse()
+  cells
 
-collapseCells = (row, direction) ->
-  row = row.filter (x) -> x isnt 0
-  while row.length < 4
-      if direction is 'right'
-        row.unshift 0
-      else if direction == 'left'
-        row.push 0
+collapseCells = (cells, direction) ->
+  cells = cells.filter (x) -> x isnt 0
+  while cells.length < 4
+      if direction in ['right', 'down']
+        cells.unshift 0
+      else if direction in ['left', 'up']
+        cells.push 0
   # if direction is 'left'
   #   while row.length < 4
   #     row.push 0
-  row
+  cells
 
 moveIsValid = (originalBoard, newBoard) ->
   for row in [0..3]
@@ -123,15 +131,13 @@ boardIsFull = (board) ->
       return false
   true
 
-noValidMoves = (board) ->
-  direction = 'right'
+noValidMoves = (board, direction) ->
   newBoard = move(board, direction)
-  if moveIsValid(board, newBoard)
-    return false
+  return false if moveIsValid(board, newBoard)
   true
 
-isGameOver = (board) ->
-  boardIsFull(board) and noValidMoves(board)
+isGameOver = (board, direction) ->
+  boardIsFull(board) and noValidMoves(board, direction)
 
 showBoard = (board) ->
   for row in [0..3]
@@ -147,6 +153,13 @@ printArray = (array) ->
     console.log row
   console.log "-- End --"
 
+highScore = (board) ->
+  score = 0
+  for row in [0..3]
+    for col in [0..3]
+      score += board[row][col]
+  score
+
 $ ->
   @board = buildBoard()
   generateTile(@board)
@@ -157,9 +170,9 @@ $ ->
     $( ".board" ).animate(
       opacity: "toggle",
       left: "+=50",
-      height: "toggle",
-      # 'zoom': 0,
-      5000)
+      # height: "toggle",
+      'zoom': 0,
+      50000)
 
   $('body').keydown (event) =>
 
@@ -183,14 +196,19 @@ $ ->
       #check move is valid
       if moveIsValid(@board, newBoard)
         console.log "valid"
-        generateTile(newBoard)
         @board = newBoard
+        generateTile(newBoard)
         #generate tile
-        showBoard(@board)
-        #show board
         #check game lost
-        if isGameOver(@board)
-          console.log "YOU LOSE!"
+        score = highScore(@board)
+        $("#highscore > span").text(score)
+        if isGameOver(@board, direction)
+          alert "YOU LOSE! YOU SUCK! HAHAHA"
+          showBoard(@board)
+          #show board
+        else
+          showBoard(@board)
+          #show board
       else
           console.log "invalid"
 

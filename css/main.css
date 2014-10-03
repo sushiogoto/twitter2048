@@ -7,12 +7,21 @@ body {
   background: #94a3ab;
   color: #212121;
   font-family: "Grand Hotel";
+  font-size: 2em;
   text-align: center;
 }
 
 /** {
   border: 1px solid blue;
 }*/
+
+#header {
+  font-size: 3em;
+}
+
+#highscore {
+  width: 100px;
+}
 
 .board {
   background: #bbada0;
