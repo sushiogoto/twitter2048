@@ -47,7 +47,7 @@
     var i, newBoard, row, _i;
     newBoard = buildBoard();
     for (i = _i = 0; _i <= 3; i = ++_i) {
-      if (direction === 'right') {
+      if (direction === 'right' || direction === 'left') {
         row = getRow(i, board);
         row = mergeCells(row, direction);
         row = collapseCells(row, direction);
@@ -66,14 +66,14 @@
   };
 
   mergeCells = function(row, direction) {
-    var a, b, _i, _j, _ref;
-    if (direction === "right") {
+    var merge;
+    merge = function(row) {
+      var a, b, _i, _j, _ref;
       for (a = _i = 3; _i >= 1; a = --_i) {
         for (b = _j = _ref = a - 1; _ref <= 0 ? _j <= 0 : _j >= 0; b = _ref <= 0 ? ++_j : --_j) {
           if (row[a] === 0) {
             break;
           } else if (row[a] === row[b]) {
-            console.log('merge');
             row[a] *= 2;
             row[b] = 0;
           } else if (row[b] !== 0) {
@@ -81,6 +81,14 @@
           }
         }
       }
+      return row;
+    };
+    switch (direction) {
+      case "right":
+        row = merge(row);
+        break;
+      case "left":
+        row = merge(row.reverse()).reverse();
     }
     return row;
   };
@@ -92,6 +100,10 @@
     if (direction === 'right') {
       while (row.length < 4) {
         row.unshift(0);
+      }
+    } else if (direction === 'left') {
+      while (row.length < 4) {
+        row.push(0);
       }
     }
     return row;
@@ -109,16 +121,29 @@
     return false;
   };
 
-  isGameOver = function(board) {
-    return boardIsFull(board) && noValidMoves(board);
-  };
-
   boardIsFull = function(board) {
+    var row, _i, _len;
+    for (_i = 0, _len = board.length; _i < _len; _i++) {
+      row = board[_i];
+      if (__indexOf.call(row, 0) >= 0) {
+        return false;
+      }
+    }
     return true;
   };
 
   noValidMoves = function(board) {
+    var direction, newBoard;
+    direction = 'right';
+    newBoard = move(board, direction);
+    if (moveIsValid(board, newBoard)) {
+      return false;
+    }
     return true;
+  };
+
+  isGameOver = function(board) {
+    return boardIsFull(board) && noValidMoves(board);
   };
 
   showBoard = function(board) {
@@ -152,6 +177,15 @@
     generateTile(this.board);
     generateTile(this.board);
     showBoard(this.board);
+    $(".board").click((function(_this) {
+      return function() {
+        return $(".board").animate({
+          opacity: 0.25,
+          left: "+=50",
+          height: "toggle"
+        }, 5000);
+      };
+    })(this));
     return $('body').keydown((function(_this) {
       return function(event) {
         var direction, key, keys, newBoard;
@@ -178,8 +212,8 @@
           if (moveIsValid(_this.board, newBoard)) {
             console.log("valid");
             _this.board = newBoard;
-            generateTile(_this.board);
             showBoard(_this.board);
+            generateTile(_this.board);
             if (isGameOver(_this.board)) {
               return console.log("YOU LOSE!");
             }

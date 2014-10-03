@@ -45,7 +45,7 @@ move = (board, direction) ->
   newBoard = buildBoard()
 
   for i in [0..3]
-    if direction is 'right'
+    if direction is 'right' or direction is 'left'
       row = getRow(i, board)
       row = mergeCells(row, direction)
       row = collapseCells(row, direction)
@@ -65,19 +65,29 @@ setRow = (row, index, board) ->
 #   [board[0][c], board[1][c], board[2][c], board[3][c]]
 
 mergeCells = (row, direction) ->
-  if direction == "right"
+
+  merge = (row) ->
     for a in [3..1]
       for b in [a-1..0]
         if row[a] is 0 then break
         else if row[a] == row[b]
-          console.log 'merge'
           row[a] *= 2
           row[b] = 0
         else if row[b] isnt 0 then break
+    row
   # else if direction == "left"
   #   for a in [1..3]
-  #     for b in [1..a-1]
-  #       # console.log a,b
+  #     for b in [0..a-1]
+  #       if row[a] is 0 then break
+  #       else if row[a] == row[b]
+  #         row[b] *= 2
+  #         row[a] = 0
+  #       else if row[b] isnt a-1 then break
+  switch direction
+    when "right"
+      row = merge row
+    when "left"
+      row = merge(row.reverse()).reverse()
   row
 
 collapseCells = (row, direction) ->
@@ -85,9 +95,12 @@ collapseCells = (row, direction) ->
   if direction is 'right'
     while row.length < 4
       row.unshift 0
-  # else if direction == 'left'
+  # if direction is 'left'
   #   while row.length < 4
   #     row.push 0
+  else if direction == 'left'
+    while row.length < 4
+      row.push 0
   row
 
 moveIsValid = (originalBoard, newBoard) ->
@@ -97,14 +110,26 @@ moveIsValid = (originalBoard, newBoard) ->
         return true
   false
 
-isGameOver = (board) ->
-  boardIsFull(board) and noValidMoves(board)
-
 boardIsFull = (board) ->
+  # for row in board
+  #   for e in row
+  #     if e is 0
+  #       return false
+  # true
+  for row in board
+    if 0 in row
+      return false
   true
 
 noValidMoves = (board) ->
+  direction = 'right'
+  newBoard = move(board, direction)
+  if moveIsValid(board, newBoard)
+    return false
   true
+
+isGameOver = (board) ->
+  boardIsFull(board) and noValidMoves(board)
 
 showBoard = (board) ->
   for row in [0..3]
@@ -122,6 +147,13 @@ $ ->
   generateTile(@board)
   generateTile(@board)
   showBoard(@board)
+  # $('.board').scale(2);
+
+  $( ".board" ).click =>
+    $( ".board" ).animate(
+      opacity: 0.25,
+      left: "+=50",
+      height: "toggle",5000)
 
   $('body').keydown (event) =>
 
@@ -147,13 +179,13 @@ $ ->
         console.log "valid"
         @board = newBoard
         #generate tile
-        generateTile(@board)
-        #show board
         showBoard(@board)
+        #show board
+        generateTile(@board)
         #check game lost
         if isGameOver(@board)
           console.log "YOU LOSE!"
       else
-        console.log "invalid"
+          console.log "invalid"
 
     else
