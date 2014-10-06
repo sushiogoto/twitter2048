@@ -44,19 +44,22 @@ generateTile = (board) ->
 move = (board, direction) ->
   newBoard = buildBoard()
   # validDirection = ['right', 'left', 'up', 'down']
+  growthMultiplier = 0
   for i in [0..3]
     if direction is 'right' or direction is 'left'
       row = getRow(i, board)
       [row, growth] = mergeCells(row, direction)
+      growthMultiplier += growth
       row = collapseCells(row, direction)
       setRow(row, i, newBoard)
     else if direction is 'up' or direction is 'down'
       column = getCol(i, board)
       [column, growth] = mergeCells(column, direction)
+      growthMultiplier += growth
       column = collapseCells(column, direction)
       setCol(column, i, newBoard)
 
-  [newBoard, growth]
+  [newBoard, growthMultiplier]
   # board = newBoard
   # showBoard(board)
 
@@ -87,8 +90,6 @@ mergeCells = (cells, direction) ->
           cells[a] *= 2
           cells[b] = 0
           growthMultiplier += cells[a]
-          # if cells[a] >= 64
-          #   $('.dino').trigger("play")
         else if cells[b] isnt 0 then break
     cells
   # else if direction == "left"
@@ -111,12 +112,12 @@ shrinkStopFinal = (growthMulti, totalTime) ->
   timeLeft = parseFloat($('.board').css("zoom")) * totalTime
 
   if growthMulti >= 8
-
+    if growthMulti >= 64
+      $('.dino').trigger("play")
     timeLeft += 1000
     x += growthMulti / 5000
     $('.board').stop()
     $('.board').css("zoom", x)
-    $('.dino').trigger("play")
     $(".board" ).animate(
       'zoom': 0,
       timeLeft,
@@ -213,10 +214,13 @@ $ ->
   [@score, @highscore] = totalScores(@board, @highscore)
   $(".button-level > button" ).click (event) =>
     [@score, @board] = newGame()
-    if event.target.id == "hard"
+    if event.target.id == "easy"
+      @totalTime = 25000
+    else if event.target.id == "hard"
       @totalTime = 10000
-    else if event.target.id == "easy"
-      @totalTime = 50000
+    else if event.target.id == "extreme"
+      @totalTime = 5000
+
     $(".button-level").hide("fast")
     $(".title").css("display", "inline-block")
     $(".scores-container").css("display", "inline-block")
@@ -260,6 +264,7 @@ $ ->
 
       #try moving
       [newBoard, growth] = move(@board, direction)
+      $(".test").html(growth)
       #check move is valid
       if moveIsValid(@board, newBoard)
         console.log "valid"

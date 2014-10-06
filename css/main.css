@@ -31,9 +31,13 @@ body {
   margin: 0 auto;
   text-align: center;
 }
-
+.test {
+  color: white;
+  font-size: 5em;
+}
 .board {
   background: #bbada0;
+  color: black;
   display: none;
   height: 472px;
   margin: 0 auto;

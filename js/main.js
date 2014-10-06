@@ -44,22 +44,25 @@
   };
 
   move = function(board, direction) {
-    var column, growth, i, newBoard, row, _i, _ref, _ref1;
+    var column, growth, growthMultiplier, i, newBoard, row, _i, _ref, _ref1;
     newBoard = buildBoard();
+    growthMultiplier = 0;
     for (i = _i = 0; _i <= 3; i = ++_i) {
       if (direction === 'right' || direction === 'left') {
         row = getRow(i, board);
         _ref = mergeCells(row, direction), row = _ref[0], growth = _ref[1];
+        growthMultiplier += growth;
         row = collapseCells(row, direction);
         setRow(row, i, newBoard);
       } else if (direction === 'up' || direction === 'down') {
         column = getCol(i, board);
         _ref1 = mergeCells(column, direction), column = _ref1[0], growth = _ref1[1];
+        growthMultiplier += growth;
         column = collapseCells(column, direction);
         setCol(column, i, newBoard);
       }
     }
-    return [newBoard, growth];
+    return [newBoard, growthMultiplier];
   };
 
   getRow = function(r, board) {
@@ -121,11 +124,13 @@
     x = parseFloat($('.board').css("zoom"));
     timeLeft = parseFloat($('.board').css("zoom")) * totalTime;
     if (growthMulti >= 8) {
+      if (growthMulti >= 64) {
+        $('.dino').trigger("play");
+      }
       timeLeft += 1000;
       x += growthMulti / 5000;
       $('.board').stop();
       $('.board').css("zoom", x);
-      $('.dino').trigger("play");
       return $(".board").animate({
         'zoom': 0
       }, timeLeft, void 0, (function(_this) {
@@ -261,10 +266,12 @@
       return function(event) {
         var _ref2;
         _ref2 = newGame(), _this.score = _ref2[0], _this.board = _ref2[1];
-        if (event.target.id === "hard") {
+        if (event.target.id === "easy") {
+          _this.totalTime = 25000;
+        } else if (event.target.id === "hard") {
           _this.totalTime = 10000;
-        } else if (event.target.id === "easy") {
-          _this.totalTime = 50000;
+        } else if (event.target.id === "extreme") {
+          _this.totalTime = 5000;
         }
         $(".button-level").hide("fast");
         $(".title").css("display", "inline-block");
@@ -302,6 +309,7 @@
           })();
           console.log("direction is " + direction);
           _ref2 = move(_this.board, direction), newBoard = _ref2[0], growth = _ref2[1];
+          $(".test").html(growth);
           if (moveIsValid(_this.board, newBoard)) {
             console.log("valid");
             _this.board = newBoard;
