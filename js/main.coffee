@@ -77,6 +77,7 @@ setCol = (col, index, board) ->
 #   [board[0][c], board[1][c], board[2][c], board[3][c]]
 
 mergeCells = (cells, direction) ->
+  $('.dino').trigger("stop")
   merge = (cells) ->
     for a in [3..1]
       for b in [a-1..0]
@@ -84,6 +85,9 @@ mergeCells = (cells, direction) ->
         else if cells[a] == cells[b]
           cells[a] *= 2
           cells[b] = 0
+          shrinkStop(cells[a])
+          # if cells[a] >= 64
+          #   $('.dino').trigger("play")
         else if cells[b] isnt 0 then break
     cells
   # else if direction == "left"
@@ -100,6 +104,32 @@ mergeCells = (cells, direction) ->
     when "left", "up"
       cells = merge(cells.reverse()).reverse()
   cells
+
+shrinkStop = (mergeValue) ->
+  x = 0
+  zoomSize = $('.board').css
+  timeLeft = parseFloat($('.board').css("zoom")) * @totalTime
+  if mergeValue == 8
+    alert timeLeft
+    timeLeft += 1000
+    x += 0.2
+    $('.board').stop()
+    zoomSize("zoom", x)
+    $('.dino').trigger("play")
+    $(".board" ).animate(
+      'zoom': x,
+      timeLeft,
+      undefined,
+      =>
+        showBoard(@board)
+        $(".button-level").removeAttr("style")
+        $(".board" ).stop()
+        $(".board" ).hide("fast")
+        [@score, @board] = newGame()
+    )
+
+animateTimeLeft = (animation) ->
+  quotient = $('.board').css("zoom")
 
 collapseCells = (cells, direction) ->
   cells = cells.filter (x) -> x isnt 0
@@ -154,7 +184,7 @@ printArray = (array) ->
     console.log row
   console.log "-- End --"
 
-highScore = (board, highscore = 0) ->
+totalScores = (board, highscore = 0) ->
   score = 0
   for row in [0..3]
     for col in [0..3]
@@ -170,63 +200,85 @@ newGame = () ->
   score = 0
   [score, newBoard, $(".board").removeAttr("style"), showBoard(newBoard)]
 
+hideEverything = (board) ->
+  [newGame(), $(".board").removeAttr("style"), $(".score-container").text(0), $(".best-container").text(@highscore), $(".button-level").removeAttr("style"), $(".board" ).stop(), $(".board" ).hide("fast")]
+
 $ ->
-  [@score, @board] = newGame()
-  showBoard(@board)
-  [@score, @highscore] = highScore(@board, @score, @highscore)
-  $(".score-container").text(@score)
-  $(".best-container").text(@highscore)
   # if $(".board").width() < 450
   #   alert "hello"
   # $('.board').scale(2);
-  $("#clickme" ).click =>
+  [@score, @board] = newGame()
+  [@score, @highscore] = totalScores(@board, @highscore)
+  $(".button-level > button" ).click ->
+    if @id == "hard"
+      @totalTime = 10000
+    else if @id == "easy"
+      @totalTime = 50000
+    alert @totalTime
+    $(".button-level").hide("fast")
+    $(".title").css("display", "inline-block")
+    $(".scores-container").css("display", "inline-block")
+    $(".score-container").text(@score)
+    $(".best-container").text(@highscore)
     $(".board" ).show("fast")
     $(".board" ).animate(
-      opacity: 0,
       # left: "+=50",
       # : "toggle",
-      'zoom': 0.2,
-      30000)
-    setTimeout(=>
-      [@score, @board] = newGame()
-    , 35000)
-    $('body').keydown (event) =>
+      'zoom': 0,
+      @totalTime,
+      undefined,
+      =>
+        showBoard(@board)
+        $(".button-level").removeAttr("style")
+        $(".board" ).stop()
+        $(".board" ).hide("fast")
+        [@score, @board] = newGame()
+    )
 
-      key = event.which
-      keys = [37..40]
 
-      if key in keys
-        event.preventDefault()
-        console.log "key: ", key
-        direction = switch key
-          when 37 then "left"
-          when 38 then "up"
-          when 39 then "right"
-          when 40 then "down"
+    # setTimeout(=>
+    #   [@score, @board] = newGame()
+    # , 60500)
 
-        console.log "direction is #{direction}"
+  $('body').keydown (event) =>
+    key = event.which
+    keys = [37..40]
 
-        #try moving
-        newBoard = move(@board, direction)
-        #check move is valid
-        if moveIsValid(@board, newBoard)
-          console.log "valid"
-          @board = newBoard
-          generateTile(newBoard)
-          #generate tile
-          #check game lost
-          [@score, @highscore] = highScore(@board, @score, @highscore)
-          $(".score-container").text(@score)
-          $(".best-container").text(@highscore)
-          if isGameOver(@board, direction)
-            alert "YOU LOSE! YOU SUCK! HAHAHA"
-            showBoard(@board)
-            #show board
-          else
-            showBoard(@board)
-            #show board
 
+    if key in keys
+      event.preventDefault()
+      console.log "key: ", key
+      direction = switch key
+        when 37 then "left"
+        when 38 then "up"
+        when 39 then "right"
+        when 40 then "down"
+
+      console.log "direction is #{direction}"
+
+      #try moving
+      newBoard = move(@board, direction)
+      #check move is valid
+      if moveIsValid(@board, newBoard)
+        console.log "valid"
+        @board = newBoard
+        generateTile(newBoard)
+        #generate tile
+        #check game lost
+        [@score, @highscore] = totalScores(@board, @highscore)
+        $(".score-container").text(@score)
+        $(".best-container").text(@highscore)
+        if isGameOver(@board, direction)
+          alert "YOU LOSE! YOU SUCK! HAHAHA"
+          showBoard(@board)
+          $(".button-level").removeAttr("style")
+          $(".board" ).stop()
+          $(".board" ).hide("fast")
+          [@score, @board] = newGame()
+          #show board
         else
-            console.log "invalid"
+          showBoard(@board)
+          #show board
 
       else
+          console.log "invalid"

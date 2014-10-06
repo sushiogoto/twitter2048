@@ -23,7 +23,7 @@ body {
 
 .title {
   text-align: left;
-  display: inline-block;
+  display: none;
 }
 
 .highscore {
@@ -46,7 +46,7 @@ body {
 
 .scores-container {
   text-align: right;
-  display: inline-block; }
+  display: none; }
 
 .score-container, .best-container {
   position: relative;
@@ -89,13 +89,29 @@ body {
 .best-container:after {
   content: "best"; }
 
-#clickme {
+.button-level {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); /* Yep! */
+  /*width: 48%;
+  height: 59%;*/
+  outline: 0;}
+
+.button-level #hard {
   border-radius: 3px;
   border: none;
   background: #FFEEE3;
   font-size: 1.5em;
   margin: 10px;
-  outline: 0;
+}
+
+.button-level #easy {
+  border-radius: 3px;
+  border: none;
+  background: #FFEEE3;
+  font-size: 1.5em;
+  margin: 10px;
 }
 
 .cell {
