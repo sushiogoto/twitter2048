@@ -106,30 +106,23 @@ mergeCells = (cells, direction) ->
   cells
 
 shrinkStop = (mergeValue) ->
-  x = 0
-  zoomSize = $('.board').css
-  timeLeft = parseFloat($('.board').css("zoom")) * @totalTime
-  if mergeValue == 8
-    alert timeLeft
+  x = parseFloat($('.board').css("zoom"))
+  timeLeft = parseFloat($('.board').css("zoom")) * 5000
+
+  if mergeValue >= 8
     timeLeft += 1000
-    x += 0.2
+    x += mergeValue / 5000
     $('.board').stop()
-    zoomSize("zoom", x)
+    $('.board').css("zoom", x)
     $('.dino').trigger("play")
     $(".board" ).animate(
-      'zoom': x,
+      'zoom': 0,
       timeLeft,
       undefined,
       =>
-        showBoard(@board)
-        $(".button-level").removeAttr("style")
-        $(".board" ).stop()
-        $(".board" ).hide("fast")
         [@score, @board] = newGame()
     )
 
-animateTimeLeft = (animation) ->
-  quotient = $('.board').css("zoom")
 
 collapseCells = (cells, direction) ->
   cells = cells.filter (x) -> x isnt 0
@@ -198,11 +191,14 @@ newGame = () ->
   generateTile(newBoard)
   generateTile(newBoard)
   score = 0
-  [score, newBoard, $(".board").removeAttr("style"), showBoard(newBoard)]
+  [score, newBoard, $(".board").removeAttr("style"), showBoard(newBoard), $(".button-level").removeAttr("style")]
 
 hideEverything = (board) ->
-  [newGame(), $(".board").removeAttr("style"), $(".score-container").text(0), $(".best-container").text(@highscore), $(".button-level").removeAttr("style"), $(".board" ).stop(), $(".board" ).hide("fast")]
 
+  # [newGame(), $(".board").removeAttr("style"), $(".score-container").text(0), $(".best-container").text(@highscore), $(".button-level").removeAttr("style"), $(".board" ).stop(), $(".board" ).hide("fast")]
+
+endGame = () ->
+  [$(".board" ).stop(), $(".board" ).hide(), $(".button-level").removeAttr("style")]
 $ ->
   # if $(".board").width() < 450
   #   alert "hello"
@@ -214,7 +210,6 @@ $ ->
       @totalTime = 10000
     else if @id == "easy"
       @totalTime = 50000
-    alert @totalTime
     $(".button-level").hide("fast")
     $(".title").css("display", "inline-block")
     $(".scores-container").css("display", "inline-block")
@@ -228,10 +223,10 @@ $ ->
       @totalTime,
       undefined,
       =>
-        showBoard(@board)
-        $(".button-level").removeAttr("style")
-        $(".board" ).stop()
-        $(".board" ).hide("fast")
+        # showBoard(@board)
+        # $(".button-level").removeAttr("style")
+        # $(".board" ).stop()
+        # $(".board" ).hide("fast")
         [@score, @board] = newGame()
     )
 
@@ -270,10 +265,6 @@ $ ->
         $(".best-container").text(@highscore)
         if isGameOver(@board, direction)
           alert "YOU LOSE! YOU SUCK! HAHAHA"
-          showBoard(@board)
-          $(".button-level").removeAttr("style")
-          $(".board" ).stop()
-          $(".board" ).hide("fast")
           [@score, @board] = newGame()
           #show board
         else
