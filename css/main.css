@@ -4,8 +4,8 @@
 }
 
 body {
-  background: #94a3ab;
-  color: #212121;
+  background: #EDC9AF;
+  color: #C79775;
   font-family: "Grand Hotel";
   font-size: 2em;
   text-align: center;
@@ -14,17 +14,27 @@ body {
 /** {
   border: 1px solid blue;
 }*/
-
-#header {
-  font-size: 3em;
+.main-container {
+  margin: 0 auto;
+  text-align: center;
+  height: 800px;
+  width: 490px;
 }
 
-#highscore {
+.title {
+  text-align: left;
+  display: inline-block;
+}
+
+.highscore {
   width: 100px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .board {
   background: #bbada0;
+  display: none;
   height: 472px;
   margin: 0 auto;
   padding: 6px;
@@ -34,10 +44,55 @@ body {
   width: 472px;
 }
 
+.scores-container {
+  text-align: right;
+  display: inline-block; }
+
+.score-container, .best-container {
+  position: relative;
+  display: inline-block;
+  background: #FFEEE3;
+  padding: 15px 25px;
+  font-size: 25px;
+  height: 50px;
+  width: 120px;
+  line-height: 47px;
+  border-radius: 3px;
+  margin-top: 8px;
+  text-align: center; }
+  .score-container:after, .best-container:after {
+    position: absolute;
+    width: 100%;
+    top: 10px;
+    left: 0;
+    font-size: 25px;
+    line-height: 13px;
+    text-align: center;}
+  .score-container .score-addition, .best-container .score-addition {
+    position: absolute;
+    right: 30px;
+    color: red;
+    font-size: 25px;
+    line-height: 25px;
+    color: rgba(119, 110, 101, 0.9);
+    z-index: 100;
+    -webkit-animation: move-up 600ms ease-in;
+    -moz-animation: move-up 600ms ease-in;
+    animation: move-up 600ms ease-in;
+    -webkit-animation-fill-mode: both;
+    -moz-animation-fill-mode: both;
+    animation-fill-mode: both; }
+
+.score-container:after {
+  content: "score"; }
+
+.best-container:after {
+  content: "best"; }
+
 #clickme {
-  border-radius: 2px;
+  border-radius: 3px;
   border: none;
-  background: #abcdef;
+  background: #FFEEE3;
   font-size: 1.5em;
   margin: 10px;
   outline: 0;

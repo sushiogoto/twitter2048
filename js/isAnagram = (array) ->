@@ -1,0 +1,8 @@
+isAnagram = (array) ->
+    anag = false
+    for element in array
+      if array[element] == array[array.length-array[element]]
+        anag = true
+    if array.length < 1
+      anag == false
+    anag

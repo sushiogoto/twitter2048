@@ -131,9 +131,10 @@ boardIsFull = (board) ->
       return false
   true
 
-noValidMoves = (board, direction) ->
-  newBoard = move(board, direction)
-  return false if moveIsValid(board, newBoard)
+noValidMoves = (board) ->
+  for direction in ['left', 'right', 'up', 'down']
+    newBoard = move(board, direction)
+    return false if moveIsValid(board, newBoard)
   true
 
 isGameOver = (board, direction) ->
@@ -153,63 +154,79 @@ printArray = (array) ->
     console.log row
   console.log "-- End --"
 
-highScore = (board) ->
+highScore = (board, highscore = 0) ->
   score = 0
   for row in [0..3]
     for col in [0..3]
       score += board[row][col]
-  score
+  if score > highscore
+    highscore = score
+  [score, highscore]
+
+newGame = () ->
+  newBoard = buildBoard()
+  generateTile(newBoard)
+  generateTile(newBoard)
+  score = 0
+  [score, newBoard, $(".board").removeAttr("style"), showBoard(newBoard)]
 
 $ ->
-  @board = buildBoard()
-  generateTile(@board)
-  generateTile(@board)
+  [@score, @board] = newGame()
   showBoard(@board)
+  [@score, @highscore] = highScore(@board, @score, @highscore)
+  $(".score-container").text(@score)
+  $(".best-container").text(@highscore)
+  # if $(".board").width() < 450
+  #   alert "hello"
   # $('.board').scale(2);
-  $( "#clickme" ).click =>
-    $( ".board" ).animate(
-      opacity: "toggle",
-      left: "+=50",
-      # height: "toggle",
-      'zoom': 0,
-      50000)
+  $("#clickme" ).click =>
+    $(".board" ).show("fast")
+    $(".board" ).animate(
+      opacity: 0,
+      # left: "+=50",
+      # : "toggle",
+      'zoom': 0.2,
+      30000)
+    setTimeout(=>
+      [@score, @board] = newGame()
+    , 35000)
+    $('body').keydown (event) =>
 
-  $('body').keydown (event) =>
+      key = event.which
+      keys = [37..40]
 
-    key = event.which
-    keys = [37..40]
+      if key in keys
+        event.preventDefault()
+        console.log "key: ", key
+        direction = switch key
+          when 37 then "left"
+          when 38 then "up"
+          when 39 then "right"
+          when 40 then "down"
 
-    if key in keys
-      event.preventDefault()
-      console.log "key: ", key
-      direction = switch key
-        when 37 then "left"
-        when 38 then "up"
-        when 39 then "right"
-        when 40 then "down"
+        console.log "direction is #{direction}"
 
-      console.log "direction is #{direction}"
+        #try moving
+        newBoard = move(@board, direction)
+        #check move is valid
+        if moveIsValid(@board, newBoard)
+          console.log "valid"
+          @board = newBoard
+          generateTile(newBoard)
+          #generate tile
+          #check game lost
+          [@score, @highscore] = highScore(@board, @score, @highscore)
+          $(".score-container").text(@score)
+          $(".best-container").text(@highscore)
+          if isGameOver(@board, direction)
+            alert "YOU LOSE! YOU SUCK! HAHAHA"
+            showBoard(@board)
+            #show board
+          else
+            showBoard(@board)
+            #show board
 
-      #try moving
-      newBoard = move(@board, direction)
-      printArray newBoard
-      #check move is valid
-      if moveIsValid(@board, newBoard)
-        console.log "valid"
-        @board = newBoard
-        generateTile(newBoard)
-        #generate tile
-        #check game lost
-        score = highScore(@board)
-        $("#highscore > span").text(score)
-        if isGameOver(@board, direction)
-          alert "YOU LOSE! YOU SUCK! HAHAHA"
-          showBoard(@board)
-          #show board
         else
-          showBoard(@board)
-          #show board
-      else
-          console.log "invalid"
+            console.log "invalid"
 
-    else
+      else

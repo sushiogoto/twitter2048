@@ -1,0 +1,2 @@
+checkBaggage = (n) ->
+  if n <= 23 then "can fly" else "cannot fly"

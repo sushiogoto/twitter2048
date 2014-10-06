@@ -1,0 +1,19 @@
+languages = ['CoffeeScript', 'JavaScript', 'Ruby', 'Python']
+
+usedFor = (array) ->
+  for language in array
+    switch language
+      when "CoffeeScript" then console.log(language + " is CS")
+      when "JavaScript" then console.log(language + " is JS")
+      when "Ruby" then console.log(language + " works with Ruby on Rails")
+      when "Python" then console.log(language + " works with Django")
+
+
+console.log(usedFor languages)
+
+usedFor2 = (array) ->
+  for language in array
+    if language == "CoffeeScript" then language + " is CS"
+    else if language == "JavaScript" then language + " is JS"
+    else if language == "Ruby" then language + " works with Ruby on Rails"
+    else if language == "Python" then language + " works with Django"

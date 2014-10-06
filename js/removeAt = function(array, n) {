@@ -1,0 +1,12 @@
+removeAt = function(array, n) {
+  for(var i = array.length; i >= 0; i--) {
+    if(array[i] === n) {
+      array.splice(i, 1);
+    };
+  };
+  return array
+}
+
+hello = [1, 2, 3];
+
+removeAt(hello, 2);
