@@ -47,16 +47,16 @@ move = (board, direction) ->
   for i in [0..3]
     if direction is 'right' or direction is 'left'
       row = getRow(i, board)
-      row = mergeCells(row, direction)
+      [row, growth] = mergeCells(row, direction)
       row = collapseCells(row, direction)
       setRow(row, i, newBoard)
     else if direction is 'up' or direction is 'down'
       column = getCol(i, board)
-      column = mergeCells(column, direction)
+      [column, growth] = mergeCells(column, direction)
       column = collapseCells(column, direction)
       setCol(column, i, newBoard)
 
-  newBoard
+  [newBoard, growth]
   # board = newBoard
   # showBoard(board)
 
@@ -78,6 +78,7 @@ setCol = (col, index, board) ->
 
 mergeCells = (cells, direction) ->
   $('.dino').trigger("stop")
+  growthMultiplier = 0
   merge = (cells) ->
     for a in [3..1]
       for b in [a-1..0]
@@ -85,7 +86,7 @@ mergeCells = (cells, direction) ->
         else if cells[a] == cells[b]
           cells[a] *= 2
           cells[b] = 0
-          shrinkStop(cells[a])
+          growthMultiplier += cells[a]
           # if cells[a] >= 64
           #   $('.dino').trigger("play")
         else if cells[b] isnt 0 then break
@@ -103,15 +104,16 @@ mergeCells = (cells, direction) ->
       cells = merge cells
     when "left", "up"
       cells = merge(cells.reverse()).reverse()
-  cells
+  [cells, growthMultiplier]
 
-shrinkStop = (mergeValue) ->
+shrinkStopFinal = (growthMulti, totalTime) ->
   x = parseFloat($('.board').css("zoom"))
-  timeLeft = parseFloat($('.board').css("zoom")) * 5000
+  timeLeft = parseFloat($('.board').css("zoom")) * totalTime
 
-  if mergeValue >= 8
+  if growthMulti >= 8
+
     timeLeft += 1000
-    x += mergeValue / 5000
+    x += growthMulti / 5000
     $('.board').stop()
     $('.board').css("zoom", x)
     $('.dino').trigger("play")
@@ -120,8 +122,12 @@ shrinkStop = (mergeValue) ->
       timeLeft,
       undefined,
       =>
-        [@score, @board] = newGame()
+        [@board, @score] = newGame()
     )
+# shrinkStop = (mergeValue) ->
+#   finalValue = mergeValue
+#   finalValue
+
 
 
 collapseCells = (cells, direction) ->
@@ -156,7 +162,7 @@ boardIsFull = (board) ->
 
 noValidMoves = (board) ->
   for direction in ['left', 'right', 'up', 'down']
-    newBoard = move(board, direction)
+    [newBoard, growth] = move(board, direction)
     return false if moveIsValid(board, newBoard)
   true
 
@@ -205,17 +211,18 @@ $ ->
   # $('.board').scale(2);
   [@score, @board] = newGame()
   [@score, @highscore] = totalScores(@board, @highscore)
-  $(".button-level > button" ).click ->
-    if @id == "hard"
+  $(".button-level > button" ).click (event) =>
+    [@score, @board] = newGame()
+    if event.target.id == "hard"
       @totalTime = 10000
-    else if @id == "easy"
+    else if event.target.id == "easy"
       @totalTime = 50000
     $(".button-level").hide("fast")
     $(".title").css("display", "inline-block")
     $(".scores-container").css("display", "inline-block")
     $(".score-container").text(@score)
     $(".best-container").text(@highscore)
-    $(".board" ).show("fast")
+    $(".board" ).toggle()
     $(".board" ).animate(
       # left: "+=50",
       # : "toggle",
@@ -252,12 +259,13 @@ $ ->
       console.log "direction is #{direction}"
 
       #try moving
-      newBoard = move(@board, direction)
+      [newBoard, growth] = move(@board, direction)
       #check move is valid
       if moveIsValid(@board, newBoard)
         console.log "valid"
         @board = newBoard
         generateTile(newBoard)
+        shrinkStopFinal(growth, @totalTime)
         #generate tile
         #check game lost
         [@score, @highscore] = totalScores(@board, @highscore)

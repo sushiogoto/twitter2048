@@ -1,12 +1,12 @@
 @font-face {
-  font-family: "Grand Hotel";
-  src: url("/fonts/GrandHotel-Regular.otf");
+  font-family: "Mathlete";
+  src: url("/fonts/Mathlete-Bulky.otf");
 }
 
 body {
-  background: #EDC9AF;
-  color: #C79775;
-  font-family: "Grand Hotel";
+  background: url(http://freewallpapers4desktop.com/wallpapers/grungy_oil_stained_concrete_pavement_texture-1920x1200.jpg);
+  color: #ecebea;
+  font-family: "Mathlete";
   font-size: 2em;
   text-align: center;
 }
@@ -51,8 +51,8 @@ body {
 .score-container, .best-container {
   position: relative;
   display: inline-block;
-  background: #FFEEE3;
-  padding: 15px 25px;
+  background: black;
+  padding: 10px 25px;
   font-size: 25px;
   height: 50px;
   width: 120px;
@@ -101,17 +101,28 @@ body {
 .button-level #hard {
   border-radius: 3px;
   border: none;
-  background: #FFEEE3;
+  background: black;
   font-size: 1.5em;
-  margin: 10px;
+  margin: 7px;
+  padding: 15px;
 }
 
 .button-level #easy {
   border-radius: 3px;
   border: none;
-  background: #FFEEE3;
+  background: black;
   font-size: 1.5em;
-  margin: 10px;
+  margin: 7px;
+  padding: 15px;
+}
+
+.button-level #extreme {
+  border-radius: 3px;
+  border: none;
+  background: black;
+  font-size: 1.5em;
+  margin: 7px;
+  padding: 15px;
 }
 
 .cell {
