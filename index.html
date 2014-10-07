@@ -5,8 +5,26 @@
   <title>tarpit 2048</title>
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" type="image/png" href="images/favicon.ico">
 </head>
 <body>
+  <!-- Modal -->
+  <div class="modal fade" id="gameOverModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h1 class="modal-title" id="myModalLabel">GAME OVER</h1>
+        </div>
+        <div class="modal-body">
+          <img src="http://school.discoveryeducation.com/clipart/images/dinoskel.gif" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="row">
     <div class="test"></div>
@@ -28,6 +46,11 @@
         <button id="hard" type="submit">viscous</button>
         <button id="extreme" type="submit">exctinction event</button>
       </div>
+      <!-- <a href="#gameOverPopup" data-rel="popup" data-position-to="window" class="ui-btn ui-btn-inline ui-corner-all">Click</a>
+      <div data-role="popup" id="gameOverPopup">
+        <div data-role="header"><h1>GAME OVER</h1></div>
+      </div> -->
+
       <div class="board">
         <div class="cell r0 c0"><div></div></div>
         <div class="cell r0 c1"><div></div></div>
@@ -52,7 +75,9 @@
   </div>
   <audio>
     <audio class="dino" src="audio/dino.mp3"></audio>
+    <audio class="indiana" src="audio/indiana.mp3"></audio>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>

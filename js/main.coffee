@@ -81,6 +81,7 @@ setCol = (col, index, board) ->
 
 mergeCells = (cells, direction) ->
   $('.dino').trigger("stop")
+  $('.indiana').trigger("stop")
   growthMultiplier = 0
   merge = (cells) ->
     for a in [3..1]
@@ -112,7 +113,9 @@ shrinkStopFinal = (growthMulti, totalTime) ->
   timeLeft = parseFloat($('.board').css("zoom")) * totalTime
 
   if growthMulti >= 8
-    if growthMulti >= 64
+    if growthMulti >= 1024
+      $('.indiana').trigger("play")
+    else if growthMulti >= 64
       $('.dino').trigger("play")
     timeLeft += 1000
     x += growthMulti / 5000
@@ -123,7 +126,7 @@ shrinkStopFinal = (growthMulti, totalTime) ->
       timeLeft,
       undefined,
       =>
-        [@board, @score] = newGame()
+        [@board, @score] = repeatGame()
     )
 # shrinkStop = (mergeValue) ->
 #   finalValue = mergeValue
@@ -193,6 +196,13 @@ totalScores = (board, highscore = 0) ->
     highscore = score
   [score, highscore]
 
+repeatGame = () ->
+  newBoard = buildBoard()
+  generateTile(newBoard)
+  generateTile(newBoard)
+  score = 0
+  [score, newBoard, $('#gameOverModal').modal('toggle'), $(".board").removeAttr("style"), showBoard(newBoard), $(".button-level").removeAttr("style")]
+
 newGame = () ->
   newBoard = buildBoard()
   generateTile(newBoard)
@@ -238,7 +248,7 @@ $ ->
         # $(".button-level").removeAttr("style")
         # $(".board" ).stop()
         # $(".board" ).hide("fast")
-        [@score, @board] = newGame()
+        [@score, @board] = repeatGame()
     )
 
 
@@ -278,7 +288,7 @@ $ ->
         $(".best-container").text(@highscore)
         if isGameOver(@board, direction)
           alert "YOU LOSE! YOU SUCK! HAHAHA"
-          [@score, @board] = newGame()
+          [@score, @board] = repeatGame()
           #show board
         else
           showBoard(@board)
