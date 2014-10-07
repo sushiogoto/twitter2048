@@ -113,7 +113,7 @@ shrinkStopFinal = (growthMulti, totalTime) ->
   timeLeft = parseFloat($('.board').css("zoom")) * totalTime
 
   if growthMulti >= 8
-    if growthMulti >= 1024
+    if growthMulti >= 256
       $('.indiana').trigger("play")
     else if growthMulti >= 64
       $('.dino').trigger("play")
@@ -287,7 +287,6 @@ $ ->
         $(".score-container").text(@score)
         $(".best-container").text(@highscore)
         if isGameOver(@board, direction)
-          alert "YOU LOSE! YOU SUCK! HAHAHA"
           [@score, @board] = repeatGame()
           #show board
         else

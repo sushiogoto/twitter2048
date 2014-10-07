@@ -125,7 +125,7 @@
     x = parseFloat($('.board').css("zoom"));
     timeLeft = parseFloat($('.board').css("zoom")) * totalTime;
     if (growthMulti >= 8) {
-      if (growthMulti >= 1024) {
+      if (growthMulti >= 256) {
         $('.indiana').trigger("play");
       } else if (growthMulti >= 64) {
         $('.dino').trigger("play");
@@ -331,7 +331,6 @@
             $(".score-container").text(_this.score);
             $(".best-container").text(_this.highscore);
             if (isGameOver(_this.board, direction)) {
-              alert("YOU LOSE! YOU SUCK! HAHAHA");
               return _ref4 = repeatGame(), _this.score = _ref4[0], _this.board = _ref4[1], _ref4;
             } else {
               return showBoard(_this.board);
